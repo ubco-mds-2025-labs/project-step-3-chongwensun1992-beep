@@ -2,23 +2,15 @@
 FileIoDataStorageController
 ---------------------------
 
-Controller class responsible for all SYSTEM-LEVEL data storage
-operations in SmartBudget.
-
-This includes:
-    • Saving current records to a backup JSON file
-    • Loading records from backup files
-    • Clearing the system's primary data store (records.json)
-    • Listing user-created backup files
-    • Deleting selected backup files
-
-Acts as the STORAGE CONTROLLER layer, bridging:
-    - entity models (Income, Expense)
-    - low-level file I/O helper functions in file_io_module_3
+Enhanced for Step 3:
+    - Robust error handling with try/except
+    - Uses custom SmartBudgetError for controlled failures
+    - Prevents crashes on missing files, bad JSON, IO failures
 """
 
 from smartbudget.entity.income import Income
 from smartbudget.entity.expense import Expense
+from smartbudget.entity.base_record import SmartBudgetError
 
 from smartbudget.file_io_module_3 import (
     save_to_json,
@@ -37,88 +29,146 @@ class FileIoDataStorageController:
     # Clear primary data file
     # --------------------------------------------------------
     def clear_data(self):
-        confirm = input("⚠ Are you sure you want to CLEAR ALL DATA? (y/n): ").lower()
-        if confirm == "y":
-            clear_json()  # Resets records.json
-            print("✔ All records have been cleared.\n")
-        else:
-            print("❌ Cancelled.\n")
+        try:
+            confirm = input("⚠ Are you sure you want to CLEAR ALL DATA? (y/n): ").lower()
+            if confirm == "y":
+                try:
+                    clear_json()
+                    print("✔ All records have been cleared.\n")
+                except Exception as e:
+                    raise SmartBudgetError(f"Failed to clear records.json: {e}")
+            else:
+                print("❌ Cancelled.\n")
+
+        except Exception as e:
+            print(f"❌ Error in clear_data: {e}")
 
     # --------------------------------------------------------
     # Save current records to user-specified file
     # --------------------------------------------------------
     def save_data(self):
-        filename = input("Enter filename to save (e.g., backup.json): ").strip()
+        try:
+            filename = input("Enter filename to save (e.g., backup.json): ").strip()
 
-        if filename == "records.json":
-            print("❌ Cannot save to system file.\n")
-            return
+            if not filename:
+                raise SmartBudgetError("Filename cannot be empty.")
 
-        if file_exists(filename):
-            overwrite = input("⚠ File exists. Overwrite? (y/n): ").lower()
-            if overwrite != "y":
-                print("❌ Save cancelled.\n")
+            if filename == "records.json":
+                print("❌ Cannot save to system file.\n")
                 return
 
-        data = load_from_json("records.json")
-        save_to_json(data, filename)
+            # Overwrite prompt
+            if file_exists(filename):
+                overwrite = input("⚠ File exists. Overwrite? (y/n): ").lower()
+                if overwrite != "y":
+                    print("❌ Save cancelled.\n")
+                    return
 
-        print(f"✔ Records saved to {filename}\n")
+            try:
+                data = load_from_json("records.json")
+            except Exception as e:
+                raise SmartBudgetError(f"Failed to read records.json: {e}")
+
+            try:
+                save_to_json(data, filename)
+            except Exception as e:
+                raise SmartBudgetError(f"Failed to save backup file '{filename}': {e}")
+
+            print(f"✔ Records saved to {filename}\n")
+
+        except SmartBudgetError as e:
+            print(f"❌ Save error: {e}")
+        except Exception as e:
+            print(f"❌ Unexpected error in save_data: {e}")
 
     # --------------------------------------------------------
     # Load backup file into memory
     # --------------------------------------------------------
     def load_data(self, incomes: list, expenses: list):
-        """
-        Loads records from a backup file and appends them into
-        the provided incomes/expenses lists.
-        """
+        try:
+            filename = input("Enter filename to load: ").strip()
 
-        filename = input("Enter filename to load: ").strip()
+            if not filename:
+                raise SmartBudgetError("Filename cannot be empty.")
 
-        if not file_exists(filename):
-            print("❌ File not found.\n")
-            return
+            if not file_exists(filename):
+                print("❌ File not found.\n")
+                return
 
-        loaded_records = load_from_json(filename)
+            try:
+                loaded_records = load_from_json(filename)
+            except Exception as e:
+                raise SmartBudgetError(f"Failed to load JSON from '{filename}': {e}")
 
-        for record in loaded_records:
-            if isinstance(record, Income):
-                incomes.append(record)
-            elif isinstance(record, Expense):
-                expenses.append(record)
+            # Populate income/expense lists
+            try:
+                for record in loaded_records:
+                    if isinstance(record, Income):
+                        incomes.append(record)
+                    elif isinstance(record, Expense):
+                        expenses.append(record)
+            except Exception as e:
+                raise SmartBudgetError(f"Error processing loaded records: {e}")
 
-        print(f"\n✔ Loaded {len(loaded_records)} records from '{filename}'\n")
-        for rec in loaded_records:
-            print(" -", rec.describe())
-        print()
+            print(f"\n✔ Loaded {len(loaded_records)} records from '{filename}'\n")
+            for rec in loaded_records:
+                print(" -", rec.describe())
+            print()
+
+        except SmartBudgetError as e:
+            print(f"❌ Load error: {e}")
+        except Exception as e:
+            print(f"❌ Unexpected error in load_data: {e}")
 
     # --------------------------------------------------------
     # Display available backup files
     # --------------------------------------------------------
     def show_files(self):
-        print("\nFiles in 'files/' directory:")
+        try:
+            print("\nFiles in 'files/' directory:")
 
-        files = [f for f in list_files() if f != "records.json"]
+            try:
+                files = [f for f in list_files() if f != "records.json"]
+            except Exception as e:
+                raise SmartBudgetError(f"Failed to list files: {e}")
 
-        if not files:
-            print(" (No user files found)")
-        else:
-            for f in files:
-                print(" -", f)
-        print()
+            if not files:
+                print(" (No user files found)")
+            else:
+                for f in files:
+                    print(" -", f)
+            print()
+
+        except SmartBudgetError as e:
+            print(f"❌ File listing error: {e}")
+        except Exception as e:
+            print(f"❌ Unexpected error in show_files: {e}")
 
     # --------------------------------------------------------
     # Delete user-selected backup file
     # --------------------------------------------------------
     def delete_backup_file(self):
-        filename = input("Enter filename to delete: ").strip()
+        try:
+            filename = input("Enter filename to delete: ").strip()
 
-        if filename == "records.json":
-            print("❌ Cannot delete system file.\n")
-            return
+            if not filename:
+                raise SmartBudgetError("Filename cannot be empty.")
 
-        if delete_file(filename):
-            print(f"✔ Deleted '{filename}'\n")
-        else:
-            print("❌ File not found.\n")
+            if filename == "records.json":
+                print("❌ Cannot delete system file.\n")
+                return
+
+            try:
+                result = delete_file(filename)
+            except Exception as e:
+                raise SmartBudgetError(f"File deletion failed: {e}")
+
+            if result:
+                print(f"✔ Deleted '{filename}'\n")
+            else:
+                print("❌ File not found.\n")
+
+        except SmartBudgetError as e:
+            print(f"❌ Delete error: {e}")
+        except Exception as e:
+            print(f"❌ Unexpected error in delete_backup_file: {e}")

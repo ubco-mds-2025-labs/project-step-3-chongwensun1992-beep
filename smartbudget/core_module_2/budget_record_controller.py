@@ -1,21 +1,17 @@
 """
-BudgetRecordController
-----------------------
+BudgetRecordController (Step 3 Enhanced)
+---------------------------------------
 
-Coordinates all record-related operations in SmartBudget:
-    - Adding income and expenses
-    - Displaying summaries and analytical insights
-    - Triggering visualizations
-    - Forwarding new records to the storage layer
-
-This class serves as the CONTROLLER layer connecting:
-    entity  → Income, Expense
-    analysis → summary, insights, plots
-    storage → append_to_json
+Enhancements added for Step 3:
+    - Robust error and exception handling
+    - All failures converted into SmartBudgetError
+    - Defensive input validation
+    - Ensures CLI never crashes due to bad input
 """
 
 from smartbudget.entity.income import Income
 from smartbudget.entity.expense import Expense
+from smartbudget.entity.base_record import SmartBudgetError
 
 from smartbudget.analysis_module_1.summary import (
     total_income, total_expenses, budget_balance
@@ -34,63 +30,109 @@ class BudgetRecordController:
         self.incomes = []
         self.expenses = []
 
-    # ------------------ Display Functions ------------------ #
-
+    # --------------------------------------------------------
+    # Display Functions
+    # --------------------------------------------------------
     def show_summary(self):
-        print("\n=== Budget Summary ===")
-        print("Total Income:", total_income())
-        print("Total Expenses:", total_expenses())
-        print("Balance:", budget_balance())
-        print("=======================\n")
+        try:
+            print("\n=== Budget Summary ===")
+            print("Total Income:", total_income())
+            print("Total Expenses:", total_expenses())
+            print("Balance:", budget_balance())
+            print("=======================\n")
+        except Exception as e:
+            raise SmartBudgetError(f"Failed to display summary: {e}")
 
     def show_income_details(self):
-        print("\n=== Income Details ===")
-        details = income_details()
-        if not details:
-            print("No incomes recorded.\n")
-            return
-        for d in details:
-            print(" -", d)
-        print()
+        try:
+            print("\n=== Income Details ===")
+            details = income_details()
+            if not details:
+                print("No incomes recorded.\n")
+                return
+            for d in details:
+                print(" -", d)
+            print()
+        except Exception as e:
+            raise SmartBudgetError(f"Failed to show income details: {e}")
 
     def show_expense_details(self):
-        print("\n=== Expense Details ===")
-        details = expense_details()
-        if not details:
-            print("No expenses recorded.\n")
-            return
-        for d in details:
-            print(" -", d)
-        print()
+        try:
+            print("\n=== Expense Details ===")
+            details = expense_details()
+            if not details:
+                print("No expenses recorded.\n")
+                return
+            for d in details:
+                print(" -", d)
+            print()
+        except Exception as e:
+            raise SmartBudgetError(f"Failed to show expense details: {e}")
 
     def show_expense_plot(self):
-        print("\n=== Expense Visualization ===")
-        print("Generating chart...")
-        plot_expense_by_category()
-        print("\n✔ Chart displayed!\n")
+        try:
+            print("\n=== Expense Visualization ===")
+            print("Generating chart...")
+            plot_expense_by_category()
+            print("\n✔ Chart displayed!\n")
+        except Exception as e:
+            raise SmartBudgetError(f"Failed to display expense chart: {e}")
 
-    # ------------------ Record Creation ------------------ #
-
+    # --------------------------------------------------------
+    # Record Creation
+    # --------------------------------------------------------
     def add_income(self):
-        print("\n--- Add Income ---")
-        name = input("Enter income name: ")
-        amount = float(input("Enter amount: "))
-        source = input("Enter source: ")
+        try:
+            print("\n--- Add Income ---")
+            name = input("Enter income name: ").strip()
 
-        inc = Income(name, amount, source)
-        self.incomes.append(inc)
-        append_to_json([inc])
+            try:
+                amount = float(input("Enter amount: "))
+            except ValueError:
+                raise SmartBudgetError("Amount must be numeric.")
 
-        print("\n✔ Income added:", inc.describe(), "\n")
+            source = input("Enter source: ").strip()
+
+            inc = Income(name, amount, source)
+            self.incomes.append(inc)
+
+            try:
+                append_to_json([inc])
+            except Exception as e:
+                raise SmartBudgetError(f"Failed to save income: {e}")
+
+            print("\n✔ Income added:", inc.describe(), "\n")
+
+        except SmartBudgetError as e:
+            print(f"❌ Failed to add income: {e}")
+
+        except Exception as e:
+            print(f"❌ Unexpected add_income error: {e}")
 
     def add_expense(self):
-        print("\n--- Add Expense ---")
-        name = input("Enter expense name: ")
-        amount = float(input("Enter amount: "))
-        category = input("Enter category: ")
+        try:
+            print("\n--- Add Expense ---")
+            name = input("Enter expense name: ").strip()
 
-        exp = Expense(name, amount, category)
-        self.expenses.append(exp)
-        append_to_json([exp])
+            try:
+                amount = float(input("Enter amount: "))
+            except ValueError:
+                raise SmartBudgetError("Amount must be numeric.")
 
-        print("\n✔ Expense added:", exp.describe(), "\n")
+            category = input("Enter category: ").strip()
+
+            exp = Expense(name, amount, category)
+            self.expenses.append(exp)
+
+            try:
+                append_to_json([exp])
+            except Exception as e:
+                raise SmartBudgetError(f"Failed to save expense: {e}")
+
+            print("\n✔ Expense added:", exp.describe(), "\n")
+
+        except SmartBudgetError as e:
+            print(f"❌ Failed to add expense: {e}")
+
+        except Exception as e:
+            print(f"❌ Unexpected add_expense error: {e}")
