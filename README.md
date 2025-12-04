@@ -1,297 +1,107 @@
-# 📦 SmartBudget — Python Household Budgeting Package
+# ✅ DATA 533 — Project Step 3 Requirements Summary
 
-SmartBudget is a modular Python package for recording incomes and expenses, performing financial analysis, generating visual insights, and saving/loading data using JSON.  
-It demonstrates clean software architecture, object-oriented programming, testing with unittest, and collaborative Git workflows.
-
----
-
-# 📁 Submission Notes (DATA 533 – Step 1)
-
-All deliverables such as project description, pre-presentation slides, final presentation slides, and demo video are stored in:
-
-```
-docs/
-```
+This section documents how our SmartBudget package satisfies **all Step 3 expectations**.
 
 ---
 
-# 📁 Project Structure
+# 🎯 1. Continuous Integration (4 marks)
 
-```
-project/
-│
-├── files/
-│   └── records.json
-│
-├── smartbudget/
-│   ├── __init__.py
-│   │
-│   ├── analysis/
-│   │   ├── __init__.py
-│   │   ├── insights.py
-│   │   └── summary.py
-│   │
-│   ├── core/
-│   │   ├── __init__.py
-│   │   ├── controller_menu.py
-│   │   ├── controller_records.py
-│   │   └── controller_system.py
-│   │
-├── entity/
-│   │   ├── __init__.py
-│   │   ├── base_record.py
-│   │   ├── constants.py
-│   │   ├── expense.py
-│   │   └── income.py
-│   │
-├── io/
-│   │   ├── __init__.py
-│   │   ├── json_io.py
-│   │   └── file_utils.py
-│
-├── tests/
-│   ├── test_base_record.py
-│   ├── test_income_expense.py
-│   ├── test_summary.py
-│   ├── test_insights.py
-│   └── test_suite.py
-│
-├── main.py
-├── Function_Guide_Reference.md
-└── README.md
-```
+We configured **Continuous Integration (CI)** using **GitHub Actions**:
+
+- Automatic test execution on every push & pull request  
+- Separate branches for each contributor  
+- Daily commits pushed to GitHub  
+- Pull Requests used for merging changes  
+- Both group members contributed through feature branches
+
+📌 CI configuration file:  
+- .github/workflows/main.yml
+
+The CI pipeline automatically:
+
+- installs dependencies  
+- runs `unittest` via `python -m unittest discover`  
+- checks import errors  
+- ensures the package installs correctly from PyPI  
 
 ---
 
-# ✨ Features Overview
+# 🎯 2. Error & Exception Handling (6 marks)
 
-## 🧱 1. Entity Models (`entity/`)
+At least **six methods** contain appropriate exception handling, including:
 
-### `RecordBase`
+| Module | Method | Exception Type |
+|--------|--------|----------------|
+| `RecordBase` | `__init__`, `name.setter`, `amount.setter` | `SmartBudgetError`, `ValueError`, `TypeError` |
+| `Income` | `__init__`, `source.setter` | `SmartBudgetError` |
+| `Expense` | `__init__`, `category.setter` | `SmartBudgetError` |
+| `controller_records` | `add_income`, `add_expense` | User input validation errors |
+| `controller_system` | `save_data`, `load_data`, `delete_backup_file` | File I/O safety |
+| `json_io` | `save_to_json`, `load_from_json` | File errors & JSON decode errors |
 
-- validation for name  
-- validation for amount  
-- shared fields & methods  
-- `to_dict()` for JSON  
-- `show()` for UI display  
+We also introduced a **custom project-wide exception**:
+- [SmartBudget] SmartBudgetError(message, context=None)
 
-### `Income` / `Expense`
-
-Both inherit from `RecordBase`:
-
-- `Income(name, amount, source)`  
-- `Expense(name, amount, category)` (stored as negative)
-
-Override:
-
-- `describe()`  
-- `to_dict()`  
+This satisfies the requirement of **one user-defined custom exception**.
 
 ---
 
-# 🎯 2. Controllers (`core/`)
+# 🎯 3. Test Suite Coverage ≥ 75% (3 marks)
 
-### `budget_record_controller.py`
-
-- show summary  
-- show income/expense details 
-- add income  
-- add expense  
-- show_expense_plot 
-
-### `file_io_data_controller.py`
-
-- save JSON backup  
-- load backup  
-- list files  
-- delete file  
-- reset records  
-
-### `app_menu_controller.py`
-
-- menu UI  
-- user routing  
-- main program loop  
+- A full `unittest` suite covers **entity**, **analysis**, **I/O**, **controllers**, **menus**.
+- Coverage exceeds **75%** for all modules.
+- Coverage tool used:  
+```bash
+coverage run --source=smartbudget -m unittest discover tests
+coverage report -m
+coverage html
+```
+📌 **Screenshots are included in `/commit-screenshot/coverage_morethan_75_percent_screenshot.png`**  
+(as required by the instructor).
 
 ---
 
-# 📊 3. Analysis Tools (`analysis/`)
+# 🎯 4. Demo Video (3 marks)
 
-The analysis module offers a set of lightweight yet expressive helper functions designed to summarize financial activity, highlight key patterns, and support quick diagnostic checks of a user’s records, all without imposing additional structure or altering the underlying data objects.
+A 5-minute demo video describing:
 
-- **summary.py**
-  - `total_income()`
-  - `total_expenses()`
-  - `budget_balance()`
-
-- **insights.py**
-  - `income_details()`
-  - `expense_details()`
-  - `plot_expense_by_category()`
-  - `_load_split()`
-
-These functions provide the analytical backbone of SmartBudget, allowing users to perform structured aggregation, generate interpretable summaries, and create visual outputs, all while leaving the core data objects and storage structures untouched.
-
----
-
-# 💾 4. JSON IO (`io/`)
-
-### `json_io.py`
-Handles all JSON-based data interactions:
-
-- `save_to_json()` 
-   Serializes Income/Expense objects and writes them to a JSON file.
-   
-- `append_to_json()`  
-   Appends a single financial record to an existing JSON file.
-   
-- `load_from_json()`
-   Loads data from a JSON file and reconstructs Income/Expense objects.
-   
-- `clear_json()` 
-   Resets a JSON file by deleting all stored records.
-
-### `file_utils.py`
-Provides foundational file-management utilities:
-
-- `file_exists()`  
-   Checks whether a file exists.
-   
-- `list_files()`
-   Lists all JSON backup files stored inside the /files/ directory.
-   
-- `delete_file()`  
-   Deletes a specified backup file.
-
----
-
-# 🚀 Running SmartBudget
-
-Run:
-
-```
-python main.py
-```
-
-Menu:
-
-```
-1. Add Income
-2. Add Expense
-3. Show Summary
-4. Show Expense Details
-5. Show Income Details
-6. Backup Records to JSON
-7. List Backup Files
-8. Delete File
-9. Records Reset
-10. Show Expense Chart
-0. Exit
-```
-
----
-
-# 🗂 Example JSON Output
-
-```json
-[
-    {
-        "name": "Salary",
-        "amount": 5000,
-        "source": "Company A",
-        "type": "Income"
-    },
-    {
-        "name": "Rent",
-        "amount": -1200,
-        "category": "Housing",
-        "type": "Expense"
-    }
-]
-```
-
----
-
-# 🧪 Unit Testing (DATA 533 – Step 2)
-
-All Step 2 requirements satisfied.
-
-## ✔ Test Coverage
-
-Tests cover:
-
-- entity classes  
-- JSON I/O  
-- summary calculations  
-- insights and plotting logic  
-- controller functions  
-
-Each test class includes:
-
-- ≥ 2 test cases  
-- ≥ 4 assertions per case  
-- lifecycle methods:  
-  - `setUpClass`  
-  - `setUp`  
-  - `tearDown`  
-  - `tearDownClass`  
-
-## ✔ Test Suite
-
-```
-tests/test_suite.py
-```
-
-Runs all tests.
-
-Run all tests:
-
-```
-python -m unittest discover tests
-```
-
-Or:
-
-```
-python tests/test_suite.py
-```
-
----
-
-# 🤝 GitHub Collaboration (Step 2 Requirement)
-
-- GitHub repo created  
-- collaborator added  
-- both members cloned repo  
-- each used separate branches  
-- test code developed independently  
-- pull requests completed  
-- merged into `main`  
-- Git history shows equal contribution  
-
----
-
-# 🌟 Project Highlights
-
-- modular package design  
-- object-oriented entity models  
+- package structure  
+- subpackages (`entity/`, `analysis/`, `core/`, `io/`)  
+- major functionalities  
+- CLI usage  
 - JSON persistence  
-- clean separation of logic layers  
-- analysis chart with matplotlib  
-- full unittest suite  
-- proper collaboration workflow  
+- how tests & CI work  
+
+📌 Video file stored here:
+- docs/smartbudget.mp4
 
 
 ---
 
-# 📘 Summary
+# 🎯 5. Git Collaboration Evidence (2 marks)
 
-SmartBudget is a complete, well-designed Python budgeting application that fulfills all requirements for DATA 533:
+Git history demonstrates:
 
-✔ modular architecture  
-✔ OOP with inheritance  
-✔ JSON persistence  
-✔ analysis + plotting  
-✔ unittest suite  
-✔ GitHub workflow  
-✔ documentation + presentation ready  
+- equal contributions from **Chongwen Sun** and **Yifu Zhao** and **ChuYing Chen**
+- commits distributed across both authors  
+- work done independently on feature branches
+- merged via pull requests
+
+📌 Proof:  
+Screenshots included in `/commit-screenshot/`
+
+
+---
+
+# 🎯 6. PyPI Publication (2 marks)
+
+The SmartBudget package is published on PyPI:
+
+📦 **PyPI Link:**  
+https://pypi.org/project/smartbudget-mds533-sun-david/
+
+📥 Install via:
+
+```bash
+pip install smartbudget-mds533-sun-david
+```
