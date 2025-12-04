@@ -1,0 +1,50 @@
+[
+    {
+        "type": "Income",
+        "name": "123",
+        "amount": 12300.0,
+        "source": "data"
+    },
+    {
+        "type": "Expense",
+        "name": "test",
+        "amount": 1000.0,
+        "category": "123"
+    },
+    {
+        "type": "Expense",
+        "name": "123",
+        "amount": 10000.0,
+        "category": "test"
+    },
+    {
+        "type": "Income",
+        "name": "123",
+        "amount": 30000.0,
+        "source": "test"
+    },
+    {
+        "type": "Income",
+        "name": "test1",
+        "amount": 1000.0,
+        "source": "test1"
+    },
+    {
+        "type": "Expense",
+        "name": "test2",
+        "amount": 123.0,
+        "category": "test2"
+    },
+    {
+        "type": "Expense",
+        "name": "test3",
+        "amount": 123.0,
+        "category": "test4"
+    },
+    {
+        "type": "Income",
+        "name": "test2",
+        "amount": 1111.0,
+        "source": "test2"
+    }
+]

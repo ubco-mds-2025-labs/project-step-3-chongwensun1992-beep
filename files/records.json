@@ -1,0 +1,26 @@
+[
+    {
+        "type": "Income",
+        "name": "test1",
+        "amount": 1000.0,
+        "source": "test1"
+    },
+    {
+        "type": "Expense",
+        "name": "test3",
+        "amount": 20000.0,
+        "category": "test3"
+    },
+    {
+        "type": "Income",
+        "name": "test",
+        "amount": 1000.0,
+        "source": "test"
+    },
+    {
+        "type": "Expense",
+        "name": "tes2",
+        "amount": 1000000.0,
+        "category": "123"
+    }
+]

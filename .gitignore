@@ -1,0 +1,67 @@
+# =============================
+# Python cache & temp files
+# =============================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.log
+
+# =============================
+# Virtual environment folders
+# =============================
+venv/
+env/
+.venv/
+ENV/
+
+# =============================
+# IDE / Editor settings
+# =============================
+
+# VS Code
+.vscode/
+
+# PyCharm / JetBrains
+.idea/
+
+# =============================
+# Mac / Windows system files
+# =============================
+.DS_Store
+Thumbs.db
+
+# =============================
+# Jupyter Notebook checkpoints
+# =============================
+.ipynb_checkpoints/
+
+# =============================
+# Python build artifacts
+# =============================
+build/
+dist/
+*.egg-info/
+
+# =============================
+# Temporary files
+# =============================
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# =============================
+# Coverage / Test reports
+# =============================
+htmlcov/
+.coverage
+*.coverage
+.pytest_cache/
+
+# =============================
+# Local test files
+# =============================
+tests/__pycache__/
