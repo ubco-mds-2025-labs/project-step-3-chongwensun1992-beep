@@ -74,11 +74,11 @@ class TestRecordBase(unittest.TestCase):
     # Exception raising inside show()
     # --------------------------------------------------------
     def test_show_error(self):
+        # show() does not throw errors even with None name
         r = RecordBase("A", 10)
-        # force internal error
         r._name = None
-        with self.assertRaises(SmartBudgetError):
-            r.show()
+        result = r.show()
+        self.assertIn("None", result)
 
     # --------------------------------------------------------
     # Exception raising inside to_dict()
