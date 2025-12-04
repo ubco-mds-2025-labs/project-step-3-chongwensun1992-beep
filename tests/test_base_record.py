@@ -1,41 +1,103 @@
 import unittest
-import logging
-from smartbudget.entity.base_record import RecordBase
-
-logger = logging.getLogger(__name__)
+from unittest.mock import patch
+from smartbudget.entity.base_record import RecordBase, SmartBudgetError
+from smartbudget.entity.constants import Limits
 
 
 class TestRecordBase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        logger.info("=== [TestRecordBase] Preparing class-level resources ===")
-        cls.default_name = "Sample"
-        cls.default_amount = 20
+        print("\n[TestRecordBase] setUpClass")
 
     def setUp(self):
-        logger.debug("[TestRecordBase] setUp: Creating a fresh RecordBase instance")
-        self.record = RecordBase(self.default_name, self.default_amount)
+        self.record = RecordBase("Sample", 20)
 
-    def test_attributes(self):
-        logger.debug("[TestRecordBase] Running test_attributes")
+    # -------------------------------------------------------
+    # Valid record tests
+    # -------------------------------------------------------
+    def test_valid_record(self):
         self.assertEqual(self.record.name, "Sample")
         self.assertEqual(self.record.amount, 20)
         self.assertIsInstance(self.record.name, str)
-        self.assertGreaterEqual(self.record.amount, 0)
+        self.assertGreater(self.record.amount, 0)
 
-    def test_to_dict(self):
-        logger.debug("[TestRecordBase] Running test_to_dict")
+    def test_to_dict_valid(self):
         d = self.record.to_dict()
-        self.assertIn("name", d)
-        self.assertIn("amount", d)
-        self.assertEqual(d["amount"], 20)
-        self.assertIsInstance(d, dict)
+        self.assertEqual(d["type"], "RecordBase")
+        self.assertEqual(d["name"], "Sample")
+        self.assertEqual(d["amount"], 20.0)
+
+    def test_repr_str(self):
+        self.assertIn("RecordBase", repr(self.record))
+        self.assertEqual(str(self.record), "Sample: 20.00")
+
+    # -------------------------------------------------------
+    # Initialization failures
+    # -------------------------------------------------------
+    def test_invalid_initialization(self):
+        with self.assertRaises(SmartBudgetError):
+            RecordBase("", 10)
+
+        with self.assertRaises(SmartBudgetError):
+            RecordBase(123, 10)
+
+        with self.assertRaises(SmartBudgetError):
+            RecordBase("Test", "abc")
+
+        with self.assertRaises(SmartBudgetError):
+            RecordBase("Test", 0)
+
+    # -------------------------------------------------------
+    # name setter invalid cases
+    # -------------------------------------------------------
+    def test_name_setter_invalid(self):
+        # 非字符串
+        with self.assertRaises(SmartBudgetError):
+            self.record.name = 123
+
+        # 空字符串
+        with self.assertRaises(SmartBudgetError):
+            self.record.name = ""
+
+        # 超长度
+        long_name = "A" * (Limits.MAX_NAME_LEN + 1)
+        with self.assertRaises(SmartBudgetError):
+            self.record.name = long_name
+
+    # -------------------------------------------------------
+    # amount setter invalid cases
+    # -------------------------------------------------------
+    def test_amount_setter_invalid(self):
+        with self.assertRaises(SmartBudgetError):
+            self.record.amount = "abc"
+
+        with self.assertRaises(SmartBudgetError):
+            self.record.amount = 0
+
+    # -------------------------------------------------------
+    # show() error handling
+    # -------------------------------------------------------
+    @patch("smartbudget.entity.base_record.RecordBase.name", new_callable=property)
+    def test_show_exception(self, mock_name_prop):
+        mock_name_prop.side_effect = Exception("boom")
+
+        with self.assertRaises(SmartBudgetError):
+            self.record.show()
+
+    # -------------------------------------------------------
+    # to_dict() error handling
+    # -------------------------------------------------------
+    @patch("smartbudget.entity.base_record.RecordBase.amount", new_callable=property)
+    def test_to_dict_exception(self, mock_amt_prop):
+        mock_amt_prop.side_effect = Exception("boom")
+
+        with self.assertRaises(SmartBudgetError):
+            self.record.to_dict()
 
     def tearDown(self):
-        logger.debug("[TestRecordBase] tearDown: Clearing instance")
         self.record = None
 
     @classmethod
     def tearDownClass(cls):
-        logger.info("=== [TestRecordBase] Class-level cleanup complete ===")
+        print("[TestRecordBase] tearDownClass\n")

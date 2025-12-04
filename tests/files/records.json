@@ -1,29 +1,5 @@
 [
     {
-        "type": "Income",
-        "name": "test1",
-        "amount": 1000.0,
-        "source": "test1"
-    },
-    {
-        "type": "Expense",
-        "name": "test3",
-        "amount": 20000.0,
-        "category": "test3"
-    },
-    {
-        "type": "Income",
-        "name": "test",
-        "amount": 1000.0,
-        "source": "test"
-    },
-    {
-        "type": "Expense",
-        "name": "tes2",
-        "amount": 1000000.0,
-        "category": "123"
-    },
-    {
         "type": "Expense",
         "name": "Taxi",
         "amount": 30.0,
@@ -64,30 +40,6 @@
         "name": "Taxi",
         "amount": 30.0,
         "category": "transport"
-    },
-    {
-        "type": "Income",
-        "name": "Gift",
-        "amount": 100.0,
-        "source": "friend"
-    },
-    {
-        "type": "Expense",
-        "name": "Taxi",
-        "amount": 30.0,
-        "category": "transport"
-    },
-    {
-        "type": "Expense",
-        "name": "Taxi",
-        "amount": 30.0,
-        "category": "transport"
-    },
-    {
-        "type": "Income",
-        "name": "Gift",
-        "amount": 100.0,
-        "source": "friend"
     },
     {
         "type": "Income",
