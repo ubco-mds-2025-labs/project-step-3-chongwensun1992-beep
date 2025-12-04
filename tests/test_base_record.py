@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 from smartbudget.entity.base_record import RecordBase, SmartBudgetError
 from smartbudget.entity.constants import Limits
 
@@ -52,15 +52,12 @@ class TestRecordBase(unittest.TestCase):
     # name setter invalid cases
     # -------------------------------------------------------
     def test_name_setter_invalid(self):
-        # 非字符串
         with self.assertRaises(SmartBudgetError):
             self.record.name = 123
 
-        # 空字符串
         with self.assertRaises(SmartBudgetError):
             self.record.name = ""
 
-        # 超长度
         long_name = "A" * (Limits.MAX_NAME_LEN + 1)
         with self.assertRaises(SmartBudgetError):
             self.record.name = long_name
@@ -78,7 +75,7 @@ class TestRecordBase(unittest.TestCase):
     # -------------------------------------------------------
     # show() error handling
     # -------------------------------------------------------
-    @patch("smartbudget.entity.base_record.RecordBase.name", new_callable=property)
+    @patch("smartbudget.entity.base_record.RecordBase.name", new_callable=PropertyMock)
     def test_show_exception(self, mock_name_prop):
         mock_name_prop.side_effect = Exception("boom")
 
@@ -88,7 +85,7 @@ class TestRecordBase(unittest.TestCase):
     # -------------------------------------------------------
     # to_dict() error handling
     # -------------------------------------------------------
-    @patch("smartbudget.entity.base_record.RecordBase.amount", new_callable=property)
+    @patch("smartbudget.entity.base_record.RecordBase.amount", new_callable=PropertyMock)
     def test_to_dict_exception(self, mock_amt_prop):
         mock_amt_prop.side_effect = Exception("boom")
 

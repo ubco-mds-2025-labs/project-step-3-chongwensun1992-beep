@@ -2,100 +2,83 @@ from smartbudget.entity.constants import Limits
 
 
 class SmartBudgetError(Exception):
-    """Custom exception for SmartBudget application."""
+    """Custom error for SmartBudget."""
     pass
 
 
 class RecordBase:
     """
-    Base class for financial records such as Income and Expense.
-
-    Added in Step 3:
-        - Robust error handling (try/except wrappers)
-        - Custom SmartBudgetError exception
-        - More descriptive validation errors
+    Minimal RecordBase implementation matching ALL unittest expectations.
     """
 
-    def __init__(self, name: str, amount: float):
-        try:
-            self.name = name       # triggers validation
-            self.amount = amount   # triggers validation
-        except (ValueError, TypeError) as e:
-            # convert all validation failures into app-level exception
-            raise SmartBudgetError(f"Invalid record initialization: {e}") from e
-        except Exception as e:
-            raise SmartBudgetError(f"Unexpected error creating RecordBase: {e}") from e
+    def __init__(self, name, amount):
+        self._name = None
+        self._amount = None
 
-    # --------------------------------------------------------
-    # Properties — safe attribute access
-    # --------------------------------------------------------
+        self.name = name
+        self.amount = amount
+
+    # -------------------------------------------------------
+    # name (tests patch this property)
+    # -------------------------------------------------------
     @property
-    def name(self) -> str:
+    def name(self):
         return self._name
 
     @name.setter
-    def name(self, value: str):
-        try:
-            self._validate_name(value)
-            self._name = value.strip()
-        except Exception as e:
-            raise SmartBudgetError(f"Invalid name: {e}") from e
+    def name(self, value):
+        if not isinstance(value, str):
+            raise SmartBudgetError("Name must be a string")
+        if not value.strip():
+            raise SmartBudgetError("Name cannot be empty")
+        if len(value) > Limits.MAX_NAME_LEN:
+            raise SmartBudgetError("Name too long")
+        self._name = value
 
+    # -------------------------------------------------------
+    # amount (tests patch this property)
+    # -------------------------------------------------------
     @property
-    def amount(self) -> float:
+    def amount(self):
         return self._amount
 
     @amount.setter
-    def amount(self, value: float):
+    def amount(self, value):
         try:
-            self._validate_amount(value)
-            self._amount = float(value)
-        except Exception as e:
-            raise SmartBudgetError(f"Invalid amount: {e}") from e
+            value = float(value)
+        except Exception:
+            raise SmartBudgetError("Amount must be numeric")
+        if value <= 0:
+            raise SmartBudgetError("Amount must be > 0")
+        self._amount = value
 
-    # --------------------------------------------------------
-    # Validation
-    # --------------------------------------------------------
-    def _validate_name(self, name: str):
-        if not isinstance(name, str):
-            raise TypeError("Name must be a string.")
-        if not name.strip():
-            raise ValueError("Name cannot be empty.")
-        if len(name) > Limits.MAX_NAME_LEN:
-            raise ValueError(
-                f"Name cannot exceed {Limits.MAX_NAME_LEN} characters."
-            )
-
-    def _validate_amount(self, amount: float):
-        if not isinstance(amount, (int, float)):
-            raise TypeError("Amount must be numeric.")
-        if amount == 0:
-            raise ValueError("Amount cannot be zero.")
-
-    # --------------------------------------------------------
-    # Public Interface
-    # --------------------------------------------------------
-    def show(self) -> str:
+    # -------------------------------------------------------
+    # show()
+    # -------------------------------------------------------
+    def show(self):
         try:
             return f"{self.name}: {self.amount:.2f}"
         except Exception as e:
-            raise SmartBudgetError(f"Error generating display string: {e}")
+            raise SmartBudgetError(f"Failed show: {e}")
 
-    def to_dict(self) -> dict:
+    # -------------------------------------------------------
+    # to_dict()
+    # -------------------------------------------------------
+    def to_dict(self):
         try:
             return {
                 "type": self.__class__.__name__,
                 "name": self.name,
-                "amount": float(self.amount),
+                "amount": float(self.amount)
             }
         except Exception as e:
-            raise SmartBudgetError(f"Serialization failed: {e}")
+            raise SmartBudgetError(f"Failed to_dict: {e}")
 
-    # --------------------------------------------------------
-    # Debug & Utility
-    # --------------------------------------------------------
+    # -------------------------------------------------------
+    # repr / str
+    # -------------------------------------------------------
     def __repr__(self):
-        return f"{self.__class__.__name__}(name={self.name!r}, amount={self.amount!r})"
+        return f"{self.__class__.__name__}(name={self.name}, amount={self.amount})"
 
     def __str__(self):
-        return self.show()
+        return f"{self.name}: {self.amount:.2f}"
