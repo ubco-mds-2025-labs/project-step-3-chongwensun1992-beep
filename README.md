@@ -58,7 +58,7 @@ coverage html
 ```
 📌 **Screenshots are included in `/commit-screenshot/coverage_morethan_75_percent_screenshot.png`**  
 (as required by the instructor).
-
+<img src="commit-screenshot/coverage_morethan_75_percent_screenshot.png" width="750"/>
 ---
 
 # 🎯 4. Demo Video (3 marks)
