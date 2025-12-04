@@ -118,3 +118,4 @@ def run():
             break
         except Exception as e:
             print(f"\n❌ Critical error: {e}\n")
+            break
