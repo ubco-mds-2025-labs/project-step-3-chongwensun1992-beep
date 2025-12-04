@@ -1,28 +1,12 @@
 import unittest
 
-# ===== Import all test classes =====
-from test_base_record import TestRecordBase
-from test_income_expense import TestIncomeExpense
-from test_summary import TestSummary
-from test_insights import TestInsights
-from test_budget_record_controller import TestBudgetRecordController
-from test_file_io_controller import TestFileIoDataStorageController
-from test_app_menu_controller import TestAppMenuController
-# test
 def suite():
     loader = unittest.TestLoader()
-    s = unittest.TestSuite()
 
-    # Add each test class explicitly
-    s.addTests(loader.loadTestsFromTestCase(TestRecordBase))
-    s.addTests(loader.loadTestsFromTestCase(TestIncomeExpense))
-    s.addTests(loader.loadTestsFromTestCase(TestSummary))
-    s.addTests(loader.loadTestsFromTestCase(TestInsights))
-    s.addTests(loader.loadTestsFromTestCase(TestBudgetRecordController))
-    s.addTests(loader.loadTestsFromTestCase(TestFileIoDataStorageController))
-    s.addTests(loader.loadTestsFromTestCase(TestAppMenuController))
 
-    return s
+    suite = loader.discover('.', pattern='test_*.py')
+
+    return suite
 
 
 if __name__ == "__main__":

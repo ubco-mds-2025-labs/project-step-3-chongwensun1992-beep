@@ -1,9 +1,8 @@
 from smartbudget.entity.constants import Limits
+from smartbudget.customized_exception import SmartBudgetError
 
 
-class SmartBudgetError(Exception):
-    """Custom exception for SmartBudget application."""
-    pass
+
 
 
 class RecordBase:

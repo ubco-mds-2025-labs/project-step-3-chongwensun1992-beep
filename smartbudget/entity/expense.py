@@ -1,6 +1,6 @@
 from .base_record import RecordBase, SmartBudgetError
 
-
+from .base_record import  SmartBudgetError
 class Expense(RecordBase):
     """
     Represents a single expense record.
