@@ -6,7 +6,7 @@ from test_income_expense import TestIncomeExpense
 from test_summary import TestSummary
 from test_insights import TestInsights
 from test_budget_record_controller import TestBudgetRecordController
-from test_file_io_controller import TestFileIoDataController
+from test_file_io_controller import TestFileIoDataStorageController
 from test_app_menu_controller import TestAppMenuController
 # test
 def suite():
@@ -19,7 +19,7 @@ def suite():
     s.addTests(loader.loadTestsFromTestCase(TestSummary))
     s.addTests(loader.loadTestsFromTestCase(TestInsights))
     s.addTests(loader.loadTestsFromTestCase(TestBudgetRecordController))
-    s.addTests(loader.loadTestsFromTestCase(TestFileIoDataController))
+    s.addTests(loader.loadTestsFromTestCase(TestFileIoDataStorageController))
     s.addTests(loader.loadTestsFromTestCase(TestAppMenuController))
 
     return s
