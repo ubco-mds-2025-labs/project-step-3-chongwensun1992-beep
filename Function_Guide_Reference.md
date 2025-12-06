@@ -122,28 +122,28 @@ json_io.py
 -----------
 Functions:
 - save_to_json(records, filename) 
-  Serializes a list of Income/Expense objects and writes the result to a JSON file.
+  Serializes a list of `Income` or `Expense` objects and writes the result to a JSON file.
   
 - append_to_json(records)  
-  Loads the existing JSON file, appends a new record, and saves it back.
+  Loads the existing JSON file, appends new records to it, and saves the updated list back to disk.
   
 - load_from_json(filename): reconstruct Income or Expense by type  
-  Reads a JSON file and reconstructs the corresponding Income and Expense objects based on the "type" field.
+  Reads a JSON file and reconstructs the appropriate `Income` or `Expense` objects based on the `"type"` field.
   
 - clear_json(filename)
-  Resets a JSON file by overwriting it with an empty list.
+  Resets the specified JSON file by overwriting it with an empty list.
   
 file_utils.py
 --------------
 Functions:
 - file_exists(filename)  
-  Checks whether a specified file exists in the /files/ directory.
+  Checks whether the specified file exists within the `/files/` directory.
   
 - list_files() 
-  Returns a list of all JSON backup files stored under /files/.
+  Returns a list of all JSON backup files stored in the `/files/` directory.
   
 - delete_file(filename)
-  Removes the selected JSON file from the backup directory.
+  Removes the specified JSON file from the `/files/` backup directory.
 
 ------------------------------------------------------------
 5. MAIN PROGRAM (main.py)
