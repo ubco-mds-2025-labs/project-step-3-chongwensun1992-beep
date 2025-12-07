@@ -1,0 +1,14 @@
+[
+    {
+        "type": "Income",
+        "name": "12",
+        "amount": 1000.0,
+        "source": "ss"
+    },
+    {
+        "type": "Income",
+        "name": "12",
+        "amount": 200.0,
+        "source": "ss"
+    }
+]
