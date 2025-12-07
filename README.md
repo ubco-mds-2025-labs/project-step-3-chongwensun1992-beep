@@ -83,9 +83,9 @@ A 5-minute demo video describing:
 Git history demonstrates:
 
 - equal contributions from **Chongwen Sun** and **Yifu Zhao** and **ChuYing Chen**
-- commits distributed across both authors  
-- work done independently on feature branches
-- merged via pull requests
+- commit activity distributed across all contributors 
+- development performed independently on dedicated feature branches
+- integration completed through structured pull requests
 
 📌 Proof:  
 Screenshots included in `/commit-screenshot/`
