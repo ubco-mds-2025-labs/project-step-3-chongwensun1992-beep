@@ -1,3 +1,14 @@
+"""
+Test suite for the insights module of SmartBudget.
+
+This file validates record-splitting, type checking, JSON loading, and
+detail-generation logic for income and expense objects. The tests isolate
+core functionality by mocking file I/O and dependency behavior, ensuring
+that insights functions operate correctly under both normal and exceptional
+conditions. Visualization functions are also tested to confirm that plotting
+logic executes without errors across different data scenarios.
+"""
+
 import os
 import json
 import shutil

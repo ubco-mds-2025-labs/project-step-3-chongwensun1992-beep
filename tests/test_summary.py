@@ -1,3 +1,13 @@
+"""
+Test suite for summary computations in the SmartBudget analysis module.
+
+This module verifies the correctness of total_income(), total_expenses(),
+and budget_balance() by mocking the internal _load_split() function to
+isolate pure computation logic from file I/O. The tests include type checks,
+value consistency checks, and sanity validations to ensure robust analytical
+behavior across the SmartBudget package.
+"""
+
 import unittest
 import logging
 from unittest.mock import patch
